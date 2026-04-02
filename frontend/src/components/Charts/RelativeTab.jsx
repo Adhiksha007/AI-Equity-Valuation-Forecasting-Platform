@@ -38,40 +38,40 @@ export default function RelativeTab({ relative, ticker }) {
         Sector: <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>{sector_used}</span>
       </p>
 
-      {/* Comparison table */}
+      {/* Comparison table (Raw Data) */}
       {comparison_table?.length > 0 && (
-        <div className="card" style={{ marginBottom: 20 }}>
+        <div className="card" style={{ overflowX: 'auto', marginBottom: 20 }}>
           <table className="data-table">
-            <thead>
-              <tr>
-                <th>Multiple</th>
-                <th>{ticker ?? 'Company'}</th>
-                <th>Sector Median</th>
-                <th>vs Peers</th>
-                <th>Implied Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {comparison_table.map(row => (
-                <tr key={row.multiple}>
-                  <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{row.multiple}</td>
-                  <td>{row.company ?? 'N/A'}</td>
-                  <td style={{ color: 'var(--text-muted)' }}>{row.sector_median ?? 'N/A'}</td>
-                  <td>
-                    <span style={{
-                      color: row.vs_peers?.startsWith('+') ? 'var(--red)' :
-                             row.vs_peers?.startsWith('-') ? 'var(--green)' : 'var(--amber)',
-                      fontFamily: 'var(--font-mono)',
-                    }}>
-                      {row.vs_peers}
-                    </span>
-                  </td>
-                  <td style={{ color: 'var(--green)', fontFamily: 'var(--font-mono)' }}>
-                    {row.implied_price != null ? `$${row.implied_price}` : 'N/A'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                <thead>
+                  <tr>
+                    <th>Multiple</th>
+                    <th>{ticker ?? 'Company'}</th>
+                    <th>Sector Median</th>
+                    <th>vs Peers</th>
+                    <th>Implied Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparison_table.map(row => (
+                    <tr key={row.multiple}>
+                      <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{row.multiple}</td>
+                      <td>{row.company ?? 'N/A'}</td>
+                      <td style={{ color: 'var(--text-muted)' }}>{row.sector_median ?? 'N/A'}</td>
+                      <td>
+                        <span style={{
+                          color: row.vs_peers?.startsWith('+') ? 'var(--red)' :
+                                 row.vs_peers?.startsWith('-') ? 'var(--green)' : 'var(--amber)',
+                          fontFamily: 'var(--font-mono)',
+                        }}>
+                          {row.vs_peers}
+                        </span>
+                      </td>
+                      <td style={{ color: 'var(--green)', fontFamily: 'var(--font-mono)' }}>
+                        {row.implied_price != null ? `$${row.implied_price}` : 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
           </table>
         </div>
       )}

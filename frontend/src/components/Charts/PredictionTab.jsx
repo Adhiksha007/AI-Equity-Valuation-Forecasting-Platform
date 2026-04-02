@@ -50,16 +50,16 @@ export default function PredictionTab({ prediction, forecastDays }) {
       <h3 style={{ marginBottom: 16 }}>Stock Price Prediction</h3>
 
       {/* Summary row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 20 }}>
+      <div className="kpi-grid" style={{ marginBottom: 20 }}>
         {[
           { label: 'Best Model',                  val: best_model },
           { label: 'Current Price',               val: `$${Number(current_price).toFixed(2)}` },
           { label: `Predicted (${forecastDays}d)`, val: `$${Number(predicted_final).toFixed(2)}`, delta: `${trend_pct > 0 ? '+' : ''}${Number(trend_pct).toFixed(2)}%`, deltaType: trend_pct >= 0 ? 'positive' : 'negative' },
           { label: 'Trend',                       val: trend, color: trendColor },
         ].map(({ label, val, delta, deltaType, color }) => (
-          <div key={label} className="card" style={{ textAlign: 'center' }}>
+          <div key={label} className="card kpi-card" style={{ textAlign: 'center', padding: '16px 12px' }}>
             <div className="kpi-label">{label}</div>
-            <div className="kpi-value" style={{ color: color ?? 'var(--text-primary)', fontSize: '1rem' }}>{val}</div>
+            <div className="kpi-value" style={{ color: color ?? 'var(--text-primary)', fontSize: '1.2rem' }}>{val}</div>
             {delta && <div className={`kpi-delta ${deltaType}`}>{delta}</div>}
           </div>
         ))}
