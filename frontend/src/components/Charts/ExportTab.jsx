@@ -32,7 +32,11 @@ export default function ExportTab({ ticker, forecastYears, forecastDays }) {
     setDone(false)
     setError(null)
     try {
-      const res = await fetch(`/api/export/${ticker}?forecast_years=${forecastYears}&forecast_days=${forecastDays}`)
+      const rawBase = import.meta.env.VITE_API_URL || ''
+      const baseURL = rawBase ? `${rawBase.replace(/\/$/, '')}/api` : '/api'
+      const exportUrl = `${baseURL}/export/${ticker}?forecast_years=${forecastYears}&forecast_days=${forecastDays}`
+      
+      const res = await fetch(exportUrl)
       if (!res.ok) throw new Error(`Server error: ${res.status}`)
       const blob = await res.blob()
       const url  = URL.createObjectURL(blob)
