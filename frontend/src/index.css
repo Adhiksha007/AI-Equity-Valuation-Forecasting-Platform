@@ -92,7 +92,7 @@ body {
   background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: clamp(13px, 0.9vw + 7px, 16px);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
@@ -106,10 +106,10 @@ h1, h2, h3, h4 {
   color: var(--text-primary);
   letter-spacing: -0.02em;
 }
-h1 { font-size: 1.8rem; }
-h2 { font-size: 1.4rem; }
-h3 { font-size: 1.15rem; }
-h4 { font-size: 1rem; }
+h1 { font-size: clamp(1.4rem, 2vw + 1rem, 2.2rem); }
+h2 { font-size: clamp(1.2rem, 1.5vw + 0.8rem, 1.8rem); }
+h3 { font-size: clamp(1.05rem, 1.2vw + 0.6rem, 1.4rem); }
+h4 { font-size: clamp(0.95rem, 1vw + 0.5rem, 1.2rem); }
 
 p { color: var(--text-secondary); }
 a { color: var(--accent); text-decoration: none; }
@@ -121,10 +121,79 @@ a:hover { color: var(--accent-hover); }
 ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 24px;
+  background: var(--surface);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.header-left {
+  gap: 16px; /* spacing between menu button and brand if both show */
+}
+
+.desktop-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-right {
+  justify-content: flex-end;
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 2;
+  justify-content: center;
+}
+
+.header-brand-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.header-brand-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
 /* ── Layout & Structure ──────────────────────────────────────────────────── */
 .app-shell {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  position: relative;
 }
 
 .sidebar {
@@ -137,19 +206,24 @@ a:hover { color: var(--accent-hover); }
   display: flex;
   flex-direction: column;
   padding: 24px 16px;
+  height: calc(100vh - 64px);
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: 64px;
   overflow-y: auto;
   overflow-x: hidden;
-  z-index: 10;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s, border-color 0.3s, padding 0.3s;
+  z-index: 40;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s, border-color 0.3s, padding 0.3s, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar.collapsed {
   width: 72px;
   padding: 24px 8px;
   align-items: center;
+  overflow-y: hidden; /* Prevent all scrolling */
+  scrollbar-width: none; /* Hide in Firefox */
+}
+.sidebar.collapsed::-webkit-scrollbar {
+  display: none; /* Hide in Chrome/Safari/Edge */
 }
 
 .sidebar-content {
@@ -360,6 +434,44 @@ a:hover { color: var(--accent-hover); }
   color: var(--text-primary);
 }
 
+/* ── Primary Navigation (Unified Sidebar) ────────────────────────────────── */
+.global-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 12px 16px;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+.global-nav-btn.icon-only {
+  justify-content: center;
+  padding: 12px 0;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+}
+.global-nav-btn:hover {
+  background: var(--card);
+  color: var(--text-primary);
+}
+.global-nav-btn.active {
+  background: var(--card);
+  border-color: var(--border-light);
+  color: var(--accent);
+  box-shadow: var(--shadow);
+}
+.global-nav-btn svg {
+  flex-shrink: 0;
+}
+
 /* ── Secondary Sidebar / Navigation ──────────────────────────────────────── */
 .nav-btn {
   display: flex;
@@ -411,15 +523,12 @@ a:hover { color: var(--accent-hover); }
   background: var(--card-hover);
 }
 
-/* ── KPI Grid ────────────────────────────────────────────────────────────── */
+/* ── KPI Grid (Bento Style) ──────────────────────────────────────────────── */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
-}
-@media (min-width: 1400px) {
-  .kpi-grid { grid-template-columns: repeat(6, 1fr); }
 }
 .kpi-card {
   background: var(--card);
@@ -431,6 +540,11 @@ a:hover { color: var(--accent-hover); }
   display: flex;
   flex-direction: column;
   justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
 }
 .kpi-header {
   display: flex;
@@ -696,15 +810,72 @@ a:hover { color: var(--accent-hover); }
   font-weight: 500;
 }
 
+/* ── Utilities ───────────────────────────────────────────────────────────── */
+@media (min-width: 769px) {
+  .mobile-menu-btn { display: none !important; }
+  .mobile-brand { display: none !important; }
+  .desktop-sidebar-toggle { margin-bottom: 12px; }
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
-  .analysis-layout { flex-direction: column; }
-  .analysis-sidebar { width: 100%; flex-direction: row; overflow-x: auto; position: static; padding-bottom: 8px; }
-  .nav-btn { min-width: max-content; }
+  /* Removed aggressive analysis layout wrap to keep sidebar vertical on iPads and laptops */
 }
+
 @media (max-width: 768px) {
-  .app-shell { flex-direction: column; }
-  .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
-  .main-content { padding: 20px; }
+  .app-body {
+    flex-direction: column;
+    overflow: visible;
+  }
+  .desktop-brand { display: none !important; }
+  .desktop-sidebar-toggle { display: none !important; }
+  .main-content {
+    overflow-y: visible;
+  }
+  
+  /* Make secondary tabs horizontal ONLY on small screens */
+  .analysis-layout { flex-direction: column; gap: 16px; }
+  .analysis-sidebar { display: none; } /* removed completely! */
+  .analysis-content { width: 100%; }
+  
+  .sidebar { 
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 300px;
+    height: calc(100vh - 64px);
+    z-index: 45;
+    border-right: 1px solid var(--border);
+    transform: translate3d(0, 0, 0) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+  }
+  .sidebar.collapsed {
+    width: 300px;
+    transform: translate3d(-100%, 0, 0) !important;
+    padding: 24px 16px;
+  }
   .col-2, .col-3 { grid-template-columns: 1fr; }
+  
+  /* Force KPI grid into 2 columns on mobile */
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.mobile-overlay {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.mobile-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
 }

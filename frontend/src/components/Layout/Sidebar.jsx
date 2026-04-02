@@ -1,14 +1,14 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Search, Calendar, Activity, Rocket, Info, AlertCircle, Moon, Sun, BarChart3, Loader2, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Search, Calendar, Activity, Rocket, Info, AlertCircle, Loader2, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 
-export default function Sidebar({ 
-  ticker, setTicker, 
+export default function Sidebar({
+  ticker, setTicker,
   forecastYears, setForecastYears,
-  forecastDays, setForecastDays, 
+  forecastDays, setForecastDays,
   onAnalyze, loading,
-  theme, toggleTheme,
-  isOpen, setIsOpen
+  isOpen, setIsOpen,
+  tabs, activeTab, setActiveTab, hasData
 }) {
   return (
     <motion.aside
@@ -17,41 +17,51 @@ export default function Sidebar({
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
-      {/* Brand & Sidebar Toggle */}
-      <div className="sidebar-brand" style={{ justifyContent: isOpen ? 'space-between' : 'center', width: '100%', marginBottom: isOpen ? '8px' : '0' }}>
+      <div className="sidebar-top-row" style={{ display: 'flex', alignItems: 'center', justifyContent: isOpen ? 'space-between' : 'center', width: '100%', marginBottom: '0', gap: '8px' }}>
         {isOpen && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div className="sidebar-brand-icon">
-              <BarChart3 size={24} strokeWidth={2.5} />
-            </div>
-            <span className="sidebar-brand-name" style={{ fontSize: '1.25rem' }}>StockAI</span>
+          <div className="sidebar-tagline" style={{ margin: 0, padding: 0, lineHeight: 1.3 }}>
+            Equity Valuation &amp; Forecasting
           </div>
         )}
-        
-        {/* Toggle Theme & Collapse */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: isOpen ? 'auto' : '0', flexDirection: isOpen ? 'row' : 'column' }}>
-          <button 
-            className="btn-icon" 
-            onClick={toggleTheme} 
-            aria-label="Toggle Theme" 
-            style={{ padding: '6px' }}
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-          
-          <button 
-            className="btn-icon" 
-            onClick={() => setIsOpen(!isOpen)} 
-            aria-label="Toggle Sidebar" 
-            style={{ padding: '6px' }}
+        <div className="desktop-sidebar-toggle" style={{ flexShrink: 0 }}>
+          <button
+            className="btn-icon"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle Sidebar"
           >
             {isOpen ? <PanelLeftClose size={20} /> : <PanelLeftOpen size={20} />}
           </button>
         </div>
       </div>
 
+      {hasData && tabs && (
+        <div className="global-nav-strip" style={{
+          display: 'flex', flexDirection: 'column', gap: '8px',
+          marginBottom: isOpen ? '24px' : '0',
+          marginTop: isOpen ? '16px' : '24px'
+        }}>
+          {tabs.map(tab => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                className={`global-nav-btn ${activeTab === tab.id ? 'active' : ''} ${!isOpen ? 'icon-only' : ''}`}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  if (window.innerWidth <= 768) setIsOpen(false);
+                }}
+                title={tab.label}
+              >
+                <Icon size={20} />
+                {isOpen && <span className="global-nav-label">{tab.label}</span>}
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Config Form (Hides when collapsed on desktop) */}
       <div className="sidebar-content">
-        <div className="sidebar-tagline">Equity Valuation &amp; Forecasting</div>
 
         <div className="sidebar-divider" style={{ margin: '16px 0' }} />
 
@@ -131,7 +141,7 @@ export default function Sidebar({
 
         <div style={{ marginTop: 16 }}>
           <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
-            <AlertCircle size={14} style={{ flexShrink: 0 }} /> 
+            <AlertCircle size={14} style={{ flexShrink: 0 }} />
             Not financial advice.
           </p>
         </div>

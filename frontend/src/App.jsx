@@ -1,17 +1,31 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Sidebar from './components/Layout/Sidebar'
+import Header from './components/Layout/Header'
 import Loader from './components/UI/Loader'
 import ErrorBanner from './components/UI/ErrorBanner'
 import LandingPage from './pages/LandingPage'
 import AnalysisPage from './pages/AnalysisPage'
 import client from './api/client'
 import './index.css'
+import { LineChart, DollarSign, Scale, Cpu, FileSpreadsheet, Activity, Download } from 'lucide-react'
+
+const TABS = [
+  { id: 'price', icon: LineChart, label: 'Stock Price' },
+  { id: 'dcf', icon: DollarSign, label: 'DCF Valuation' },
+  { id: 'relative', icon: Scale, label: 'Relative Valuation' },
+  { id: 'prediction', icon: Cpu, label: 'ML Prediction' },
+  { id: 'financials', icon: FileSpreadsheet, label: 'Financial Statements' },
+  { id: 'fundamental', icon: Activity, label: 'Fundamental Health' },
+  { id: 'export', icon: Download, label: 'Export Data' },
+]
 
 export default function App() {
   const [ticker, setTicker] = useState('AAPL')
   const [forecastYears, setForecastYears] = useState(5)
   const [forecastDays, setForecastDays] = useState(30)
+  
+  const [activeTab, setActiveTab] = useState('price')
   
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -56,20 +70,36 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <Sidebar
-        ticker={ticker}
-        setTicker={setTicker}
-        forecastYears={forecastYears}
-        setForecastYears={setForecastYears}
-        forecastDays={forecastDays}
-        setForecastDays={setForecastDays}
-        onAnalyze={handleAnalyze}
-        loading={loading}
+      <Header 
         theme={theme}
         toggleTheme={toggleTheme}
-        isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
       />
+      
+      <div className="app-body">
+        {/* Mobile overlay for offcanvas drawer */}
+        <div 
+          className={`mobile-overlay ${isSidebarOpen ? 'active' : ''}`}
+          onClick={() => setIsSidebarOpen(false)}
+        />
+
+        <Sidebar
+          ticker={ticker}
+          setTicker={setTicker}
+          forecastYears={forecastYears}
+          setForecastYears={setForecastYears}
+          forecastDays={forecastDays}
+          setForecastDays={setForecastDays}
+          onAnalyze={handleAnalyze}
+          loading={loading}
+          isOpen={isSidebarOpen}
+          setIsOpen={setIsSidebarOpen}
+          tabs={TABS}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          hasData={!!analysisData}
+        />
       
       <main className="main-content">
         <ErrorBanner message={error} />
@@ -81,9 +111,11 @@ export default function App() {
             data={analysisData} 
             forecastDays={forecastDays} 
             forecastYears={forecastYears} 
+            activeTab={activeTab}
           />
         )}
-      </main>
+        </main>
+      </div>
 
       <Loader visible={loading} />
     </div>

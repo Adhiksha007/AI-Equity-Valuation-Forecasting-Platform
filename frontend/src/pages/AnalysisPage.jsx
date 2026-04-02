@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LineChart, DollarSign, Scale, Cpu, FileSpreadsheet, Activity, Download } from 'lucide-react'
 
 import KpiCard from '../components/UI/KpiCard'
-import TabSidebar from '../components/UI/TabSidebar'
 
 import StockPriceTab from '../components/Charts/StockPriceTab'
 import DcfTab from '../components/Charts/DcfTab'
@@ -13,23 +12,11 @@ import FinancialsTab from '../components/Charts/FinancialsTab'
 import FundamentalTab from '../components/Charts/FundamentalTab'
 import ExportTab from '../components/Charts/ExportTab'
 
-const TABS = [
-  { id: 'price', icon: LineChart, label: 'Stock Price' },
-  { id: 'dcf', icon: DollarSign, label: 'DCF Valuation' },
-  { id: 'relative', icon: Scale, label: 'Relative Valuation' },
-  { id: 'prediction', icon: Cpu, label: 'ML Prediction' },
-  { id: 'financials', icon: FileSpreadsheet, label: 'Financial Statements' },
-  { id: 'fundamental', icon: Activity, label: 'Fundamental Health' },
-  { id: 'export', icon: Download, label: 'Export Data' },
-]
-
-function fmt(v, prefix = '$', decimals = 2) {
-  if (v == null) return '—'
-  return `${prefix}${Number(v).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`
-}
-
-export default function AnalysisPage({ data, forecastDays, forecastYears }) {
-  const [activeTab, setActiveTab] = useState('price')
+export default function AnalysisPage({ data, forecastDays, forecastYears, activeTab }) {
+  function fmt(v, prefix = '$', decimals = 2) {
+    if (v == null) return '—'
+    return `${prefix}${Number(v).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`
+  }
 
   const { ticker, company_name, sector, industry, exchange, kpi } = data
 
@@ -71,11 +58,7 @@ export default function AnalysisPage({ data, forecastDays, forecastYears }) {
         ))}
       </div>
 
-      {/* Modern Dashboard 2-pane Layout */}
       <div className="analysis-layout">
-
-        {/* Secondary Vertical Navigation */}
-        <TabSidebar tabs={TABS} active={activeTab} onChange={setActiveTab} />
 
         {/* Main Content Area */}
         <div className="analysis-content">
